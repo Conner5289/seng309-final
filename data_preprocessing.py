@@ -1,11 +1,6 @@
-from re import M
-from uuid import main
-from numpy._core.multiarray import scalar
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
-import argparse
-
 from sklearn.utils.validation import joblib
 
 
