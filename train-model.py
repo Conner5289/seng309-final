@@ -69,3 +69,10 @@ def decision_tree():
     print("The error rate for this model is", mae_test)
 
     return dt_model
+
+
+def nn():
+    pass
+    # Put your code to train the nn model here
+    # Also the preprocssing script will make to folders call data and joblib, pull the data from data/scaled_data.csv
+    # Git should not track anything in those folders
