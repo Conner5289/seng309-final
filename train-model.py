@@ -76,3 +76,4 @@ def nn():
     # Put your code to train the nn model here
     # Also the preprocssing script will make to folders call data and joblib, pull the data from data/scaled_data.csv
     # Git should not track anything in those folders
+    # Then also dump the model in the models folder with 'nameOfThemodel'.save(nerualNet.keras)
