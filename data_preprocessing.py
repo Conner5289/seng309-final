@@ -31,12 +31,12 @@ def data_preprocessing():
 
     encoded_dataframe = pd.DataFrame(encoded_data_dict)
 
-    encoder_list = {
+    encoder_map = {
         "Stage_fear": label_encoder_stage_fear,
         "Drained": label_encoder_drained,
         "personality": label_encoder_personality,
     }
-    joblib.dump(encoder_list, "joblib/encoders.joblib")
+    joblib.dump(encoder_map, "joblib/encoders.joblib")
 
     # Makes a csv file with the encoded data
     encoded_dataframe.to_csv("data/encoded_Data.csv", index=False)

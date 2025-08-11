@@ -1,13 +1,17 @@
 import joblib
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+import json
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import mean_absolute_error
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, mean_absolute_error, confusion_matrix
 
 
-def linear_model():
+def logistic_model():
     data = pd.read_csv("data/scaled_data.csv")
+    encoder_map = joblib.load("joblib/encoders.joblib")
+    personality_encoder = encoder_map["personality"]
+
     feature_data = data[
         [
             "Time_spent_Alone",
@@ -26,15 +30,52 @@ def linear_model():
         feature_data, target, test_size=0.2, random_state=52
     )
 
-    lr_model = LinearRegression()
+    lr_model = LogisticRegression()
     lr_model.fit(feature_data_train, target_train)
-    mae_test = mean_absolute_error(target_test, lr_model.predict(feature_data_test))
-    print("The error rate for this model is ", mae_test)
+
     joblib.dump(lr_model, "models/lr_model.joblib")
 
+    predictions = lr_model.predict(feature_data_test)
 
-def decision_tree():
-    feature_data = encoded_data[
+    accuracy = accuracy_score(target_test, predictions)
+    print("accuracy score:", accuracy, "\n")
+
+    cm = confusion_matrix(target_test, predictions)
+    labels = sorted(target_test.unique())
+
+    # This is stupid in the fact that to decode the labels you have to send it as an array that is why there is [0]
+    cm_df = pd.DataFrame(
+        cm,
+        index=[
+            f"Actual {personality_encoder.inverse_transform([label])[0]}"
+            for label in labels
+        ],
+        columns=[
+            f"Predicted {personality_encoder.inverse_transform([label])[0]}"
+            for label in labels
+        ],
+    )
+    print(cm_df, "\n")
+
+    error_rate = 1 - accuracy
+    print("Error Rate:", error_rate)
+
+    results = {
+        "accuracy_score": accuracy,
+        "error_rate": error_rate,
+        "confusion_matrix": cm_df.to_dict(),
+    }
+
+    with open("scores/lr_scores.json", "w") as json_file:
+        json.dump(results, json_file, indent=4)
+
+
+def random_Forest():
+    data = pd.read_csv("data/scaled_data.csv")
+    encoder_map = joblib.load("joblib/encoders.joblib")
+    personality_encoder = encoder_map["personality"]
+
+    feature_data = data[
         [
             "Time_spent_Alone",
             "Stage_fear",
@@ -45,17 +86,49 @@ def decision_tree():
             "Post_frequency",
         ]
     ]
-    target = encoded_data["Personality"]
+    target = data["Personality"]
 
     feature_data_train, feature_data_test, target_train, target_test = train_test_split(
         feature_data, target, test_size=0.2, random_state=52
     )
 
-    dt_model = DecisionTreeClassifier(random_state=52)
-    dt_model.fit(feature_data_train, target_train)
-    mae_test = mean_absolute_error(target_test, dt_model.predict(feature_data_test))
-    print("The error rate for this model is", mae_test)
-    return dt_model
+    rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf_model.fit(feature_data_train, target_train)
+
+    joblib.dump(rf_model, "models/rf_model.joblib")
+
+    predictions = rf_model.predict(feature_data_test)
+
+    accuracy = accuracy_score(target_test, predictions)
+    print("accuracy score:", accuracy, "\n")
+
+    cm = confusion_matrix(target_test, predictions)
+    labels = sorted(target_test.unique())
+
+    cm_df = pd.DataFrame(
+        cm,
+        index=[
+            f"Actual {personality_encoder.inverse_transform([label])[0]}"
+            for label in labels
+        ],
+        columns=[
+            f"Predicted {personality_encoder.inverse_transform([label])[0]}"
+            for label in labels
+        ],
+    )
+    print(cm_df, "\n")
+
+    error_rate = 1 - accuracy
+    print("Error Rate:", error_rate)
+
+    results = {
+        "accuracy_score": accuracy,
+        "error_rate": error_rate,
+        "confusion_matrix": cm_df.to_dict(),
+    }
+
+    with open("scores/rf_scores.json", "w") as json_file:
+        json.dump(results, json_file, indent=4)
 
 
 def neural_Net():
@@ -63,6 +136,6 @@ def neural_Net():
 
 
 if __name__ == "__main__":
-    linear_model()
-    decision_tree()
+    logistic_model()
+    random_Forest()
     neural_Net()

@@ -1,3 +1,7 @@
 import train_model
 
-train_model.linear_model()
+print("Log")
+train_model.logistic_model()
+print()
+print("Rand forest")
+train_model.random_Forest()
