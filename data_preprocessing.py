@@ -1,7 +1,12 @@
+from numpy._core.multiarray import scalar
+from numpy.random.mtrand import f
 import pandas as pd
+from pandas.io.sql import com
 from sklearn import preprocessing
+from sklearn.externals.array_api_compat.numpy import e
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.utils.validation import joblib
+from user_features import UserFeatures
 
 
 def data_preprocessing():
@@ -32,8 +37,8 @@ def data_preprocessing():
     encoded_dataframe = pd.DataFrame(encoded_data_dict)
 
     encoder_map = {
-        "Stage_fear": label_encoder_stage_fear,
-        "Drained": label_encoder_drained,
+        "stage_fear": label_encoder_stage_fear,
+        "drained": label_encoder_drained,
         "personality": label_encoder_personality,
     }
     joblib.dump(encoder_map, "joblib/encoders.joblib")
@@ -65,6 +70,29 @@ def data_preprocessing():
 
     final_dataframe = pd.concat([norma_dataFrame, non_norma_columns], axis=1)
     final_dataframe.to_csv("data/scaled_data.csv", index=False)
+
+
+def preprocess_user_data(features: UserFeatures):
+    encoder = joblib.load("joblib/encoders.joblib")
+    label_encoder_stage_fear = encoder["stage_fear"]
+    label_encoder_drained = encoder["drained"]
+
+    data_scalar = joblib.load("joblib/data_scalar.joblib")
+
+    #TODO: This 
+    features_map = {
+        "Time_spent_Alone": [features.user_time_alone]),
+        "Stage_fear": label_encoder_stage_fear.transform([features.user_stage_fear]),
+        "Social_event_attendance": [features.user_social_event],
+        "Going_outside": [features.user_time_outside],
+        "Drained_after_socializing": label_encoder_drained.transform(
+            [features.user_drained_event]
+        ),
+        "Friends_circle_size": [features.user_friend_num],
+        "Post_frequency": [features.user_post_num],
+    }
+
+    features_df = pd.DataFrame(features_map)
 
 
 if __name__ == "__main__":
