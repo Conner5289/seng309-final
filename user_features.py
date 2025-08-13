@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 
 
-# Need to fix these types, idk what they are just yet
 class UserFeatures(BaseModel):
     user_time_alone: float
     user_stage_fear: str

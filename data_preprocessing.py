@@ -67,7 +67,7 @@ def preprocess_data():
 
     final_dataframe = pd.concat([scaled_dataFrame, encoded_dataframe], axis=1)
     final_dataframe.reset_index(drop=True, inplace=True)
-    final_dataframe.to_csv("data/scaled_data.csv")
+    final_dataframe.to_csv("data/scaled_data.csv", index=False)
 
 
 def preprocess_user_data(features: UserFeatures):
