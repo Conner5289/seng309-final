@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ML Interface</title>
+</head>
+<body>
+<h1>ML Model Interface</h1>
+
+<form id="featureForm">
+  <label>How many hours do you spend alone?: <input type="number" name="user_time_alone" step="0.1" required></label><br>
+  <label>Do you have stage fright?(Yes/No): <input type="text" name="user_stage_fear" required></label><br>
+  <label>How many social events do you go to each week?: <input type="user_social_event" name="user_social_event" step="1.0" required></label><br>
+  <label>How many hours a day do you spend outside?: <input type="number" name="user_time_outside" step="0.1" required></label><br>
+  <label>Do you feel drained after doing social things?(Yes/No): <input type="text" name="user_drained_event" required></label><br>
+  <label>How may friends do you have?: <input type="number" name="user_friend_num" step="1.0" required></label><br>
+  <label>How many post do you make on social media each day? : <input type="number" name="user_post_num" step="1.0" required></label><br>
+  <button type="submit">Predict</button>
+</form>
+
+<div id="predictions"></div>
+
+<button id="trainButton">Train All Models</button>
+<div id="trainStatus"></div>
+
+<script>
+const form = document.getElementById('featureForm');
+const predictionsDiv = document.getElementById('predictions');
+const trainButton = document.getElementById('trainButton');
+const trainStatusDiv = document.getElementById('trainStatus');
+
+async function postJSON(url, data) {
+    const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return await resp.json();
+}
+
+function toTitleCase(str) {
+    return str.replace(
+        /\w\S*/g,
+        txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase()
+    );
+}
+
+form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const payload = {};
+    formData.forEach((v,k) => {
+    payload[k] = isNaN(v) ? toTitleCase(v) : parseFloat(v);
+});
+
+    predictionsDiv.innerHTML = "Loading...";
+    const lr = await postJSON('/predict_lr', payload);
+    const rf = await postJSON('/predict_rf', payload);
+    const nn = await postJSON('/predict_nn', payload);
+
+    predictionsDiv.innerHTML = `
+      <p>Logistic Regression: ${lr}</p>
+      <p>Random Forest: ${rf}</p>
+      <p>Neural Network: ${nn}</p>
+    `;
+});
+
+trainButton.addEventListener('click', async () => {
+    trainStatusDiv.innerHTML = "Training...";
+    const result = await postJSON('/train_models', {});
+    trainStatusDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+});
+</script>
+</body>
+</html>

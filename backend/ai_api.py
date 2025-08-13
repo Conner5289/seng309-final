@@ -4,8 +4,23 @@ import json
 from data_preprocessing import preprocess_user_data
 from user_features import UserFeatures
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# Serve static HTML
+@app.get("/")
+def get_frontend():
+    return FileResponse("../frontend/index.html")
 
 
 @app.post("/predict_lr")
