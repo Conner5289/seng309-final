@@ -1,0 +1,16 @@
+    - Time_spent_Alone: Hours spent alone daily (0–11).
+    - Stage_fear: Presence of stage fright (Yes/No).
+    - Social_event_attendance: Frequency of social events (0–10).
+    - Going_outside: Frequency of going outside (0–7).
+    - Drained_after_socializing: Feeling drained after socializing (Yes/No).
+    - Friends_circle_size: Number of close friends (0–15).
+    - Post_frequency: Social media post frequency (0–10).
+
+    - Personality: Target variable (Extrovert/Introvert).*
+
+
+Scaled
+Time_spent_Alone,Social_event_attendance,Going_outside,Friends_circle_size,Post_frequency,Stage_fear,Drained_after_socializing,Personality
+og
+Time_spent_Alone,Stage_fear,Social_event_attendance,Going_outside,Drained_after_socializing,Friends_circle_size,Post_frequency,Personality
+- So the data preprces does mess with the order but I don't think that is a big deal
