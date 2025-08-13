@@ -64,4 +64,4 @@ def test_train_rf_model():
 
 
 if __name__ == "__main__":
-    test_train_nn()
+    test_train_rf_model()
